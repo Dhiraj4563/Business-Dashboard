@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: bizflow_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: bizflow_admin
+      POSTGRES_PASSWORD: secure_erp_password_2026
+      POSTGRES_DB: bizflow_erp
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: bizflow_backend
+    restart: always
+    environment:
+      DATABASE_URL: postgresql://bizflow_admin:secure_erp_password_2026@db:5432/bizflow_erp
+      SECRET_KEY: super_secret_jwt_key_nepal_india_erp
+      ALGORITHM: HS256
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
+volumes:
+  pgdata:
